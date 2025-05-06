@@ -1,0 +1,93 @@
+
+
+sudo apt install nginx
+sudo systemctl start nginx
+sudo systemctl enable nginx
+
+sudo npm install -g pm2
+
+VPS_HOST
+
+VPS_USER
+
+VPS_PRIVATE_KEY
+
+VPS_PORT
+
+Set up SSH Key-Based Authentication on your VPS:
+
+Generate SSH Key Pair
+
+Copy the public key to your VPS:
+
+cat ~/.ssh/id_rsa.pub | ssh <your_username>@<your_vps_ip_address> "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
+
+
+
+
+sudo nano /etc/nginx/sites-available/your-app-name
+
+Add configuration:
+
+server {
+    listen 80;
+    server_name your-domain.com your-vps-ip-address;
+
+    root /var/www/your-app-directory;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+}
+
+Create the target directory:
+
+sudo mkdir -p /var/www/your-app-directory
+sudo chown -R $USER:$USER /var/www/your-app-directory
+
+Enable the site:
+
+sudo ln -s /etc/nginx/sites-available/your-app-name /etc/nginx/sites-enabled
+
+Test and reload Nginx:
+
+sudo nginx -t
+sudo systemctl reload nginx
+
+Option 2:  Static File Server (Node.js and PM2)
+
+Install serve:
+
+sudo npm install -g serve
+
+Create start.sh:
+
+nano ~/start.sh
+```bash
+#!/bin/bash
+cd /var/www/your-app-directory
+serve -s . -p 3000
+```bash
+chmod +x ~/start.sh
+
+Run with PM2:
+
+pm2 start ~/start.sh --name hello-app
+pm2 startup
+
+Configure Nginx as a reverse proxy:
+
+server {
+    listen 80;
+    server_name your-domain.com your-vps-ip-address;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
