@@ -14,14 +14,29 @@ VPS_PRIVATE_KEY
 
 VPS_PORT
 
+ sudo yum update -y
+sudo yum install -y nginx nodejs npm certbot python3-certbot-nginx git
+
+
+sudo yum install -y python3-pip
+
+
+
+
+
+
+
+sudo nano /etc/nginx/conf.d/angular-git-action.conf
+
 Set up SSH Key-Based Authentication on your VPS:
 
 Generate SSH Key Pair
 
-Copy the public key to your VPS:
+....Copy the public key to your VPS....:
 
 cat ~/.ssh/id_rsa.pub | ssh <your_username>@<your_vps_ip_address> "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
 
+cat ~/.ssh/id_rsa.pub | ssh root@your_vps_ip "mkdir -p ~/.ssh && chmod 700 ~/.ssh && cat >> ~/.ssh/authorized_keys && chmod 600 ~/.ssh/authorized_keys"
 
 
 
